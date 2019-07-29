@@ -12,7 +12,10 @@ export NEWT_COLORS='
 root=,brightcyan
 '
 
-BACKTITLE="WiNoGATE (C) 2019 University of Applied Sciences Zwickau"
+BACKTITLE="WiNoGATE (C) 2019 University of Applied Sciences Zwickau \
+TEst \
+1
+2"
 
 # --------------------------------------------------------------------------------
 is_pi () {
