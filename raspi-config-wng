@@ -442,6 +442,13 @@ do_winogate_setup() {
   whiptail --msgbox "You will now be asked to enter the ID for the WiNoGATE" 20 60 1
   do_winogate_s1;
   whiptail --msgbox "Interactive: $INTERACTIVE" 20 60 1
+  
+  {
+    for ((i = 0 ; i <= 100 ; i+=5)); do
+        sleep 0.1
+        echo $i
+    done
+  } | whiptail --gauge "Please wait while we are sleeping..." 6 50 0
 }
 
 # --------------------------------------------------------------------------------
