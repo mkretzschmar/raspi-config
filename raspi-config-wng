@@ -448,7 +448,7 @@ do_winogate_setup() {
     "lnav" "..." ON \
     "mc" "MIDNIGHT COMMANDER" ON \
     "nc" "NETCAT" ON \
-    "..." "?" OFF) 3>&2 2>&1 1>&3
+    "..." "?" OFF 3>&2 2>&1 1>&3)
   whiptail --msgbox "Tools to install: $TOOLS" 20 60 1
 }
 
