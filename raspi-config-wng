@@ -443,12 +443,13 @@ do_winogate_setup() {
   do_winogate_s1;
   whiptail --msgbox "Interactive: $INTERACTIVE" 20 60 1
   
-  whiptail --title "Tools" --checklist \
-"Select software to install" 20 78 4 \
-"lnav" "..." ON \
-"mc" "MIDNIGHT COMMANDER" ON \
-"nc" "NETCAT" ON \
-"..." "?" OFF
+  TOOLS=$(whiptail --title "Tools" --checklist \
+    "Select software to install" 20 78 4 \
+    "lnav" "..." ON \
+    "mc" "MIDNIGHT COMMANDER" ON \
+    "nc" "NETCAT" ON \
+    "..." "?" OFF)
+  whiptail --msgbox "Tools to install: $TOOLS" 20 60 1
 }
 
 # --------------------------------------------------------------------------------
