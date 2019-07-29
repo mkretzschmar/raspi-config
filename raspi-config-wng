@@ -450,6 +450,7 @@ do_winogate_setup() {
     "nc" "NETCAT" ON \
     "..." "?" OFF 3>&2 2>&1 1>&3)
   whiptail --msgbox "Tools to install: $TOOLS" 20 60 1
+  sudo apt-get install $TOOLS
 }
 
 # --------------------------------------------------------------------------------
