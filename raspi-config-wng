@@ -443,12 +443,12 @@ do_winogate_setup() {
   do_winogate_s1;
   whiptail --msgbox "Interactive: $INTERACTIVE" 20 60 1
   
-  {
-    for ((i = 0 ; i <= 100 ; i+=5)); do
-        sleep 0.1
-        echo $i
-    done
-  } | whiptail --gauge "Please wait while we are sleeping..." 6 50 0
+  whiptail --title "Tools" --checklist \
+"Select software to install" 20 78 4 \
+"lnav" "..." ON \
+"mc" "MIDNIGHT COMMANDER" ON \
+"nc" "NETCAT" ON \
+"..." "?" OFF
 }
 
 # --------------------------------------------------------------------------------
@@ -465,6 +465,27 @@ do_winogate_s1() {
     fi
   done
   whiptail --msgbox "WNGID you entered: $WNGID" 20 60 1
+}
+
+# --------------------------------------------------------------------------------
+# Create user 'windnode' and set authorized_keys
+# --------------------------------------------------------------------------------
+do_create_wng_user() {
+
+}
+
+# --------------------------------------------------------------------------------
+# Install Prerequisites/Tools for Development: ufw
+# --------------------------------------------------------------------------------
+do_install_wng_dev() {
+  sudo apt-get update && sudo apt-get dist-upgrade $$ sudo apt-get install lnav
+}
+
+# --------------------------------------------------------------------------------
+# Install Prerequisited for Production: ufw
+# --------------------------------------------------------------------------------
+do_install_wng_prod() {
+  sudo apt-get update && sudo apt-get dist-upgrade $$ sudo apt-get install ufw
 }
 
 # --------------------------------------------------------------------------------
