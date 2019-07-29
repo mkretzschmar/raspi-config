@@ -11,6 +11,8 @@ CONFIG=/boot/config.txt
 export NEWT_COLORS='
 root=,brightcyan
 '
+
+echo test
 # --------------------------------------------------------------------------------
 is_pi () {
   ARCH=$(dpkg --print-architecture)
