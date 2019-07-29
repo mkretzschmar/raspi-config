@@ -12,7 +12,7 @@ export NEWT_COLORS='
 root=,brightcyan
 '
 
-echo test
+
 # --------------------------------------------------------------------------------
 is_pi () {
   ARCH=$(dpkg --print-architecture)
@@ -65,7 +65,7 @@ get_pi_type() {
    elif is_pitwo; then
       echo 2
    else
-      echo 0
+      #echo 0
    fi
 }
 
