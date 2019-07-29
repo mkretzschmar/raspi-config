@@ -1,5 +1,5 @@
 #!/bin/sh
-# Part of raspi-config https://github.com/RPi-Distro/raspi-config
+# Taken from https://github.com/RPi-Distro/raspi-config
 #
 # See LICENSE file for copyright and license details
 
@@ -115,9 +115,9 @@ calc_wt_size() {
 do_about() {
   whiptail --msgbox "\
 This tool provides a straight-forward way of doing initial
-configuration of the Raspberry Pi for use as WiNoGATE Gateway at the WindNODE Research Project (www.windnode.de)
-Although it can be run at any time, some of the options may have difficulties if
-you have heavily customised your installation.\
+configuration of the Raspberry Pi for use as WiNoGATE Gateway at the WindNODE Research Project (www.windnode.de).
+
+Although it can be run at any time, some of the options may have difficulties if you have heavily customised your installation.\
 " 20 70 1
 }
 
