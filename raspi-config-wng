@@ -409,6 +409,14 @@ do_change_pass() {
   whiptail --msgbox "Password changed successfully" 20 60 1
 }
 
+do_winogate_setup() {
+  whiptail --msgbox "You will now be asked to enter the ID for the WiNoGATE" 20 60 1
+  whiptail --msgbox "Interactive: $INTERACTIVE" 20 60 1
+}
+
+do_winogate_s1() {
+}
+
 do_configure_keyboard() {
   printf "Reloading keymap. This may take a short while\n"
   if [ "$INTERACTIVE" = True ]; then
@@ -1989,7 +1997,7 @@ if [ "$INTERACTIVE" = True ]; then
   while true; do
     if is_pi ; then
       FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool for WiNoGATE (raspi-config-wng)" --backtitle "$(cat /proc/device-tree/model)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Finish --ok-button Select \
-        "1 Change User Password" "Change password for the current user" \
+        "1 Setup WiNoGATE" "WiNoGATE basic setup" \
         "2 Network Options" "Configure network settings" \
         "3 Boot Options" "Configure options for start-up" \
         "4 Localisation Options" "Set up language and regional settings to match your location" \
@@ -2001,7 +2009,7 @@ if [ "$INTERACTIVE" = True ]; then
         3>&1 1>&2 2>&3)
     else
       FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool for WiNoGATE (raspi-config-wng)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Finish --ok-button Select \
-        "1 Change User Password" "Change password for the current user" \
+        "1 Setup WiNoGATE" "WiNoGATE basic setup" \
         "2 Network Options" "Configure network settings" \
         "3 Boot Options" "Configure options for start-up" \
         "4 Localisation Options" "Set up language and regional settings to match your location" \
@@ -2017,7 +2025,8 @@ if [ "$INTERACTIVE" = True ]; then
     elif [ $RET -eq 0 ]; then
       if is_pi ; then
         case "$FUN" in
-          1\ *) do_change_pass ;;
+          /*1\ *) do_change_pass ;;*/
+	  1\ *) do_winogate_setup;;
           2\ *) do_network_menu ;;
           3\ *) do_boot_menu ;;
           4\ *) do_internationalisation_menu ;;
@@ -2030,7 +2039,8 @@ if [ "$INTERACTIVE" = True ]; then
         esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
       else
         case "$FUN" in
-          1\ *) do_change_pass ;;
+          /*1\ *) do_change_pass ;;*/
+	  1\ *) do_winogate_setup;;
           2\ *) do_network_menu ;;
           3\ *) do_boot_menu ;;
           4\ *) do_internationalisation_menu ;;
