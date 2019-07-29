@@ -8,6 +8,7 @@ ASK_TO_REBOOT=0
 BLACKLIST=/etc/modprobe.d/raspi-blacklist.conf
 CONFIG=/boot/config.txt
 
+# --------------------------------------------------------------------------------
 is_pi () {
   ARCH=$(dpkg --print-architecture)
   if [ "$ARCH" = "armhf" ] ; then
@@ -23,6 +24,7 @@ else
   CMDLINE=/proc/cmdline
 fi
 
+# --------------------------------------------------------------------------------
 is_pione() {
    if grep -q "^Revision\s*:\s*00[0-9a-fA-F][0-9a-fA-F]$" /proc/cpuinfo; then
       return 0
@@ -33,21 +35,25 @@ is_pione() {
    fi
 }
 
+# --------------------------------------------------------------------------------
 is_pitwo() {
    grep -q "^Revision\s*:\s*[ 123][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]04[0-9a-fA-F]$" /proc/cpuinfo
    return $?
 }
 
+# --------------------------------------------------------------------------------
 is_pizero() {
    grep -q "^Revision\s*:\s*[ 123][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]0[9cC][0-9a-fA-F]$" /proc/cpuinfo
    return $?
 }
 
+# --------------------------------------------------------------------------------
 is_pifour() {
    grep -q "^Revision\s*:\s*[ 123][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]11[0-9a-fA-F]$" /proc/cpuinfo
    return $?
 }
 
+# --------------------------------------------------------------------------------
 get_pi_type() {
    if is_pione; then
       echo 1
@@ -58,11 +64,13 @@ get_pi_type() {
    fi
 }
 
+# --------------------------------------------------------------------------------
 is_live() {
     grep -q "boot=live" $CMDLINE
     return $?
 }
 
+# --------------------------------------------------------------------------------
 is_ssh() {
   if pstree -p | egrep --quiet --extended-regexp ".*sshd.*\($$\)"; then
     return 0
@@ -71,6 +79,7 @@ is_ssh() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 is_fkms() {
   if grep -q okay /proc/device-tree/soc/v3d@7ec00000/status 2> /dev/null || grep -q okay /proc/device-tree/soc/firmwarekms@7e600000/status 2> /dev/null ; then
     return 0
@@ -79,11 +88,13 @@ is_fkms() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 deb_ver () {
   ver=`cat /etc/debian_version | cut -d . -f 1`
   echo $ver
 }
 
+# --------------------------------------------------------------------------------
 calc_wt_size() {
   # NOTE: it's tempting to redirect stderr to /dev/null, so supress error 
   # output from tput. However in this case, tput detects neither stdout or 
@@ -100,15 +111,17 @@ calc_wt_size() {
   WT_MENU_HEIGHT=$(($WT_HEIGHT-7))
 }
 
+# --------------------------------------------------------------------------------
 do_about() {
   whiptail --msgbox "\
 This tool provides a straight-forward way of doing initial
-configuration of the Raspberry Pi. Although it can be run
-at any time, some of the options may have difficulties if
+configuration of the Raspberry Pi for use as WiNoGATE Gateway at the WindNODE Research Project (www.windnode.de)
+Although it can be run at any time, some of the options may have difficulties if
 you have heavily customised your installation.\
 " 20 70 1
 }
 
+# --------------------------------------------------------------------------------
 get_can_expand() {
   ROOT_PART=$(mount | sed -n 's|^/dev/\(.*\) on / .*|\1|p')
 
@@ -131,6 +144,7 @@ get_can_expand() {
   echo 0
 }
 
+# --------------------------------------------------------------------------------
 do_expand_rootfs() {
   ROOT_PART=$(mount | sed -n 's|^/dev/\(.*\) on / .*|\1|p')
 
@@ -208,6 +222,7 @@ EOF
   fi
 }
 
+# --------------------------------------------------------------------------------
 set_config_var() {
   lua - "$1" "$2" "$3" <<EOF > "$3.bak"
 local key=assert(arg[1])
@@ -230,6 +245,7 @@ EOF
 mv "$3.bak" "$3"
 }
 
+# --------------------------------------------------------------------------------
 clear_config_var() {
   lua - "$1" "$2" <<EOF > "$2.bak"
 local key=assert(arg[1])
@@ -245,6 +261,7 @@ EOF
 mv "$2.bak" "$2"
 }
 
+# --------------------------------------------------------------------------------
 get_config_var() {
   lua - "$1" "$2" <<EOF
 local key=assert(arg[1])
@@ -265,6 +282,7 @@ end
 EOF
 }
 
+# --------------------------------------------------------------------------------
 get_overscan() {
   OVS=$(get_config_var disable_overscan $CONFIG)
   if [ $OVS -eq 1 ]; then
@@ -274,6 +292,7 @@ get_overscan() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_overscan() {
   if is_fkms ; then
     if [ "$INTERACTIVE" = True ]; then
@@ -311,6 +330,7 @@ do_overscan() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_pixdub() {
   if is_pi ; then
     FBW=$(get_config_var framebuffer_width $CONFIG)
@@ -328,6 +348,7 @@ get_pixdub() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 is_number() {
   case $1 in
     ''|*[!0-9]*) return 0 ;;
@@ -335,6 +356,7 @@ is_number() {
   esac
 }
 
+# --------------------------------------------------------------------------------
 do_pixdub() {
   if is_fkms ; then
     if [ "$INTERACTIVE" = True ]; then
@@ -403,18 +425,25 @@ do_pixdub() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_change_pass() {
   whiptail --msgbox "You will now be asked to enter a new password for the $SUDO_USER user" 20 60 1
   passwd $SUDO_USER &&
   whiptail --msgbox "Password changed successfully" 20 60 1
 }
 
+# --------------------------------------------------------------------------------
+#
+# --------------------------------------------------------------------------------
 do_winogate_setup() {
   whiptail --msgbox "You will now be asked to enter the ID for the WiNoGATE" 20 60 1
   do_winogate_s1;
   whiptail --msgbox "Interactive: $INTERACTIVE" 20 60 1
 }
 
+# --------------------------------------------------------------------------------
+#
+# --------------------------------------------------------------------------------
 do_winogate_s1() {
   WNGID="$1"
   while [ -z "$WNGID" ] && [ "$INTERACTIVE" = True ]; do
@@ -428,6 +457,7 @@ do_winogate_s1() {
   whiptail --msgbox "WNGID you entered: $WNGID" 20 60 1
 }
 
+# --------------------------------------------------------------------------------
 do_configure_keyboard() {
   printf "Reloading keymap. This may take a short while\n"
   if [ "$INTERACTIVE" = True ]; then
@@ -443,6 +473,7 @@ do_configure_keyboard() {
   return 0
 }
 
+# --------------------------------------------------------------------------------
 do_change_locale() {
   if [ "$INTERACTIVE" = True ]; then
     dpkg-reconfigure locales
@@ -458,6 +489,7 @@ do_change_locale() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_change_timezone() {
   if [ "$INTERACTIVE" = True ]; then
     dpkg-reconfigure tzdata
@@ -472,6 +504,7 @@ do_change_timezone() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_wifi_country() {
   CODE=${1:-0}
   IFACE="$(list_wlan_interfaces | head -n 1)"
@@ -498,6 +531,7 @@ get_wifi_country() {
   return 0
 }
 
+# --------------------------------------------------------------------------------
 do_wifi_country() {
   IFACE="$(list_wlan_interfaces | head -n 1)"
   if [ -z "$IFACE" ]; then
@@ -539,10 +573,12 @@ do_wifi_country() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_hostname() {
     cat /etc/hostname | tr -d " \t\n\r"
 }
 
+# --------------------------------------------------------------------------------
 do_hostname() {
   if [ "$INTERACTIVE" = True ]; then
     whiptail --msgbox "\
@@ -567,6 +603,7 @@ No other symbols, punctuation characters, or blank spaces are permitted.\
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_memory_split() { # Memory Split
   if [ -e /boot/start_cd.elf ]; then
     # New-style memory split setting
@@ -620,6 +657,7 @@ do_memory_split() { # Memory Split
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_current_memory_split() {
   AVAILABLE_SPLITS="128 192 224 240"
   MEMSPLIT_DESCRIPTION=""
@@ -632,11 +670,13 @@ get_current_memory_split() {
   done
 }
 
+# --------------------------------------------------------------------------------
 set_memory_split() {
   cp -a /boot/arm${1}_start.elf /boot/start.elf
   sync
 }
 
+# --------------------------------------------------------------------------------
 do_overclock() {
   if ! is_pione && ! is_pitwo; then
     whiptail --msgbox "Only Pi 1 or Pi 2 can be overclocked with this tool." 20 60 2
@@ -698,6 +738,7 @@ See https://www.raspberrypi.org/documentation/configuration/config-txt/overclock
   fi
 }
 
+# --------------------------------------------------------------------------------
 set_overclock() {
   set_config_var arm_freq $2 $CONFIG &&
   set_config_var core_freq $3 $CONFIG &&
@@ -708,6 +749,7 @@ set_overclock() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 clear_overclock () {
   clear_config_var arm_freq $CONFIG &&
   clear_config_var core_freq $CONFIG &&
@@ -718,6 +760,7 @@ clear_overclock () {
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_ssh() {
   if service ssh status | grep -q inactive; then
     echo 1
@@ -726,6 +769,7 @@ get_ssh() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_ssh() {
   if [ -e /var/log/regen_ssh_keys.log ] && ! grep -q "^finished" /var/log/regen_ssh_keys.log; then
     whiptail --msgbox "Initial ssh key generation still running. Please wait and try again." 20 60 2
@@ -758,6 +802,7 @@ do_ssh() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_vnc() {
   if systemctl status vncserver-x11-serviced.service  | grep -q inactive; then
     echo 1
@@ -766,6 +811,7 @@ get_vnc() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_vnc() {
   DEFAULT=--defaultno
   if [ $(get_vnc) -eq 0 ]; then
@@ -796,6 +842,7 @@ do_vnc() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_spi() {
   if grep -q -E "^(device_tree_param|dtparam)=([^,]*,)*spi(=(on|true|yes|1))?(,.*)?$" $CONFIG; then
     echo 0
@@ -804,6 +851,7 @@ get_spi() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_spi() {
   DEFAULT=--defaultno
   if [ $(get_spi) -eq 0 ]; then
@@ -837,6 +885,7 @@ do_spi() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_i2c() {
   if grep -q -E "^(device_tree_param|dtparam)=([^,]*,)*i2c(_arm)?(=(on|true|yes|1))?(,.*)?$" $CONFIG; then
     echo 0
@@ -845,6 +894,7 @@ get_i2c() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_i2c() {
   DEFAULT=--defaultno
   if [ $(get_i2c) -eq 0 ]; then
@@ -883,6 +933,7 @@ do_i2c() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_serial() {
   if grep -q -E "console=(serial0|ttyAMA0|ttyS0)" $CMDLINE ; then
     echo 0
@@ -891,6 +942,7 @@ get_serial() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_serial_hw() {
   if grep -q -E "^enable_uart=1" $CONFIG ; then
     echo 0
@@ -903,6 +955,7 @@ get_serial_hw() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_serial() {
   DEFAULTS=--defaultno
   DEFAULTH=--defaultno
@@ -970,6 +1023,7 @@ do_serial() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 disable_raspi_config_at_boot() {
   if [ -e /etc/profile.d/raspi-config.sh ]; then
     rm -f /etc/profile.d/raspi-config.sh
@@ -980,6 +1034,7 @@ disable_raspi_config_at_boot() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_boot_cli() {
   if systemctl get-default | grep -q multi-user ; then
     echo 0
@@ -988,6 +1043,7 @@ get_boot_cli() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_autologin() {
   if [ $(get_boot_cli) -eq 0 ]; then
     # booting to CLI
@@ -1012,6 +1068,7 @@ get_autologin() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_pi4video () {
   if grep -q "^hdmi_enable_4kp60=1" $CONFIG ; then
     echo 1
@@ -1022,6 +1079,7 @@ get_pi4video () {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_pi4video() {
   if ! is_pifour ; then
     if [ "$INTERACTIVE" = True ]; then
@@ -1081,6 +1139,7 @@ do_pi4video() {
 }
 
 
+# --------------------------------------------------------------------------------
 do_boot_behaviour() {
   if [ "$INTERACTIVE" = True ]; then
     BOOTOPT=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Boot Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT \
@@ -1146,6 +1205,7 @@ EOF
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_boot_wait() {
   if test -e /etc/systemd/system/dhcpcd.service.d/wait.conf; then
     echo 0
@@ -1154,6 +1214,7 @@ get_boot_wait() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_boot_wait() {
   DEFAULT=--defaultno
   if [ $(get_boot_wait) -eq 0 ]; then
@@ -1184,6 +1245,7 @@ EOF
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_boot_splash() {
   if is_pi ; then
     if grep -q "splash" $CMDLINE ; then
@@ -1200,6 +1262,7 @@ get_boot_splash() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_boot_splash() {
   if [ ! -e /usr/share/plymouth/themes/pix/pix.script ]; then
     if [ "$INTERACTIVE" = True ]; then
@@ -1253,6 +1316,7 @@ do_boot_splash() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_rgpio() {
   if test -e /etc/systemd/system/pigpiod.service.d/public.conf; then
     echo 0
@@ -1261,6 +1325,7 @@ get_rgpio() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_rgpio() {
   DEFAULT=--defaultno
   if [ $(get_rgpio) -eq 0 ]; then
@@ -1295,6 +1360,7 @@ EOF
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_camera() {
   CAM=$(get_config_var start_x $CONFIG)
   if [ $CAM -eq 1 ]; then
@@ -1304,6 +1370,7 @@ get_camera() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_camera() {
   if [ ! -e /boot/start_x.elf ]; then
     whiptail --msgbox "Your firmware appears to be out of date (no start_x.elf). Please update" 20 60 2
@@ -1346,6 +1413,7 @@ do_camera() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_onewire() {
   if grep -q -E "^dtoverlay=w1-gpio" $CONFIG; then
     echo 0
@@ -1354,6 +1422,7 @@ get_onewire() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_onewire() {
   DEFAULT=--defaultno
   CURRENT=0
@@ -1387,6 +1456,7 @@ do_onewire() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_gldriver() {
   if [ ! -e /boot/overlays/vc4-kms-v3d.dtbo ]; then
     whiptail --msgbox "Driver and kernel not present on your system. Please update" 20 60 2
@@ -1451,6 +1521,7 @@ do_gldriver() {
   whiptail --msgbox "$STATUS" 20 60 1
 }
 
+# --------------------------------------------------------------------------------
 do_xcompmgr() {
   DEFAULT=--defaultno
   CURRENT=0
@@ -1493,6 +1564,7 @@ EOF
   fi
 }
 
+# --------------------------------------------------------------------------------
 get_net_names() {
   if grep -q "net.ifnames=0" $CMDLINE || [ "$(readlink -f /etc/systemd/network/99-default.link)" = "/dev/null" ] ; then
     echo 1
@@ -1501,6 +1573,7 @@ get_net_names() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_net_names () {
   DEFAULT=--defaultno
   CURRENT=0
@@ -1532,6 +1605,7 @@ do_net_names () {
   fi
  }
 
+# --------------------------------------------------------------------------------
 do_update() {
   apt-get update &&
   apt-get install raspi-config &&
@@ -1540,6 +1614,7 @@ do_update() {
   exec raspi-config
 }
 
+# --------------------------------------------------------------------------------
 do_audio() {
   if [ "$INTERACTIVE" = True ]; then
     AUDIO_OUT=$(whiptail --menu "Choose the audio output" 20 60 10 \
@@ -1555,6 +1630,7 @@ do_audio() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_resolution() {
   if [ "$INTERACTIVE" = True ]; then
     CMODE=$(get_config_var hdmi_mode $CONFIG)
@@ -1624,6 +1700,7 @@ do_resolution() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 list_wlan_interfaces() {
   for dir in /sys/class/net/*/wireless; do
     if [ -d "$dir" ]; then
@@ -1632,6 +1709,7 @@ list_wlan_interfaces() {
   done
 }
 
+# --------------------------------------------------------------------------------
 do_wifi_ssid_passphrase() {
   RET=0
   IFACE_LIST="$(list_wlan_interfaces)"
@@ -1728,6 +1806,7 @@ do_wifi_ssid_passphrase() {
   return $RET
 }
 
+# --------------------------------------------------------------------------------
 do_finish() {
   disable_raspi_config_at_boot
   if [ $ASK_TO_REBOOT -eq 1 ]; then
@@ -1740,11 +1819,13 @@ do_finish() {
   exit 0
 }
 
+# --------------------------------------------------------------------------------
 # $1 = filename, $2 = key name
 get_json_string_val() {
   sed -n -e "s/^[[:space:]]*\"$2\"[[:space:]]*:[[:space:]]*\"\(.*\)\"[[:space:]]*,$/\1/p" $1
 }
 
+# --------------------------------------------------------------------------------
 # TODO: This is probably broken
 do_apply_os_config() {
   [ -e /boot/os_config.json ] || return 0
@@ -1812,10 +1893,12 @@ do_apply_os_config() {
   return 0
 }
 
+# --------------------------------------------------------------------------------
 nonint() {
   "$@"
 }
 
+# --------------------------------------------------------------------------------
 #
 # Command line options for non-interactive use
 #
@@ -1854,6 +1937,7 @@ do
   esac
 done
 
+# --------------------------------------------------------------------------------
 #if [ "GET" = "${OPT_MEMORY_SPLIT:-}" ]; then
 #  set -u # Fail on unset variables
 #  get_current_memory_split
@@ -1873,6 +1957,7 @@ if [ -n "${OPT_MEMORY_SPLIT:-}" ]; then
   exit 0
 fi
 
+# --------------------------------------------------------------------------------
 do_internationalisation_menu() {
   FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Localisation Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
     "I1 Change Locale" "Set up language and regional settings to match your location" \
@@ -1894,6 +1979,7 @@ do_internationalisation_menu() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_interface_menu() {
   FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Interfacing Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
     "P1 Camera" "Enable/Disable connection to the Raspberry Pi Camera" \
@@ -1923,6 +2009,7 @@ do_interface_menu() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_advanced_menu() {
   FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Advanced Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
     "A1 Expand Filesystem" "Ensures that all of the SD card storage is available to the OS" \
@@ -1954,6 +2041,7 @@ do_advanced_menu() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_boot_menu() {
   if is_live ; then
     FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Boot Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
@@ -1980,6 +2068,7 @@ do_boot_menu() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 do_network_menu() {
   FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Network Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
     "N1 Hostname" "Set the visible name for this Pi on a network" \
@@ -1999,6 +2088,7 @@ do_network_menu() {
   fi
 }
 
+# --------------------------------------------------------------------------------
 #
 # Interactive use loop
 #
