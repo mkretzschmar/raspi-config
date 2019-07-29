@@ -415,7 +415,16 @@ do_winogate_setup() {
 }
 
 do_winogate_s1() {
-  whiptail --msgbox "S1 Interactive: $INTERACTIVE" 20 60 1
+  WNGID="$1"
+  while [ -z "$WNGID" ] && [ "$INTERACTIVE" = True ]; do
+    SSID=$(whiptail --inputbox "Please enter WNGID" 20 60 3>&1 1>&2 2>&3)
+    if [ $? -ne 0 ]; then
+      return 0
+    elif [ -z "$WNGID" ]; then
+      whiptail --msgbox "WNGID cannot be empty. Please try again." 20 60
+    fi
+  done
+  whiptail --msgbox "WNGID you entered: $WNGID" 20 60 1
 }
 
 do_configure_keyboard() {
