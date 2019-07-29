@@ -12,6 +12,7 @@ export NEWT_COLORS='
 root=,brightcyan
 '
 
+BACKTITLE="WiNoGATE (C) 2019 University of Applied Sciences Zwickau"
 
 # --------------------------------------------------------------------------------
 is_pi () {
@@ -65,8 +66,7 @@ get_pi_type() {
    elif is_pitwo; then
       echo 2
    else
-      #echo 0
-      echo Test
+      echo 0
    fi
 }
 
@@ -2144,7 +2144,8 @@ if [ "$INTERACTIVE" = True ]; then
   calc_wt_size
   while true; do
     if is_pi ; then
-      FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool for WiNoGATE (raspi-config-wng)" --backtitle "$(cat /proc/device-tree/model)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Finish --ok-button Select \
+      #FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool for WiNoGATE (raspi-config-wng)" --backtitle "$(cat /proc/device-tree/model)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Ende --ok-button Auswahl \
+      FUN=$(whiptail --title "Software Configuration Tool for WiNoGATE (raspi-config-wng)" --backtitle "$BACKTITLE" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Ende --ok-button Auswahl \
         "1 Setup WiNoGATE" "WiNoGATE basic setup" \
         "2 Network Options" "Configure network settings" \
         "3 Boot Options" "Configure options for start-up" \
