@@ -415,6 +415,7 @@ do_winogate_setup() {
 }
 
 do_winogate_s1() {
+  whiptail --msgbox "S1 Interactive: $INTERACTIVE" 20 60 1
 }
 
 do_configure_keyboard() {
