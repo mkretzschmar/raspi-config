@@ -443,14 +443,25 @@ do_winogate_setup() {
   do_winogate_s1;
   whiptail --msgbox "Interactive: $INTERACTIVE" 20 60 1
   
-  TOOLS=$(whiptail --title "Tools" --checklist \
+  whiptail --title "Tools" --checklist \
     "Select software to install" 20 78 4 \
-    "lnav" "..." ON \
-    "mc" "MIDNIGHT COMMANDER" ON \
-    "nc" "NETCAT" ON \
-    "..." "?" OFF 3>&2 2>&1 1>&3)
-  whiptail --msgbox "Tools to install: $TOOLS" 20 60 1
-  sudo apt-get install $TOOLS
+    "LNAV" "..." ON \
+    "MC" "MIDNIGHT COMMANDER" ON \
+    "NetCat" "NETCAT" ON \
+    "..." "?" OFF 2>results
+  while read choice
+  do
+    case $choice in
+      LNAV) sudo apt-get install lnav
+      ;;
+      MC) sudo apt-get install mc
+      ;;
+      NetCat) sudo apt-get install nc
+      ;;
+      *)
+      ;;
+  esac
+  done < results
 }
 
 # --------------------------------------------------------------------------------
