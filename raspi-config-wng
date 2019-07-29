@@ -8,6 +8,12 @@ ASK_TO_REBOOT=0
 BLACKLIST=/etc/modprobe.d/raspi-blacklist.conf
 CONFIG=/boot/config.txt
 
+export NEWT_COLORS='
+window=,red
+border=white,red
+textbox=white,red
+button=black,white
+'
 # --------------------------------------------------------------------------------
 is_pi () {
   ARCH=$(dpkg --print-architecture)
