@@ -439,6 +439,19 @@ do_change_pass() {
   whiptail --msgbox "Password changed successfully" 20 60 1
 }
 
+function firstroutine {
+ echo "running johns function"
+}
+
+function secondroutine {
+ echo "running glens function"
+}
+
+
+function thirdroutine {
+ echo "running adams function"
+}
+
 # --------------------------------------------------------------------------------
 # ################################################################################
 # --------------------------------------------------------------------------------
@@ -446,14 +459,34 @@ do_winogate_setup() {
   #whiptail --msgbox "You will now be asked to enter the ID for the WiNoGATE" 20 60 1
   #do_winogate_s1;
 
+
+whiptail --title "Test" --checklist --separate-output "Choose:" 20 78 15 \
+"John" "" on \
+"Glen" "" off \
+"Adam" "" off 2>results
+
+while read choice
+do
+	case $choice in
+                John) firstroutine
+                ;;
+                Glen) secondroutine
+                ;;
+                Adam) thirdroutine
+                ;;
+                *)
+                ;;
+        esac
+done < results
+
 DISTROS=$(whiptail --title "WiNoGate: Tools und Anwendungen" --checklist "" 15 60 4 \
 	"Debian" "Stable Debian" ON \
 	"Ubuntu" "Debian copycat" OFF \
 	"Centos" "Redhat copycat" ON \ 
-	"Mint" "Copycat Ubuntu/Debian" OFF 3>&1 1>&2 2>&3)
+	"Mint" "Copycat Ubuntu" OFF 3>&1 1>&2 2>&3)
 exitstatus=$?
 if [ $exitstatus = 0 ];
-then echo "Your favorite distros are:" $DISTROS
+then echo "Your favorite distros are: $DISTROS"
 else echo "Cancelled."
 fi
 
