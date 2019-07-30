@@ -701,6 +701,11 @@ do_wifi_ssid_passphrase() {
 
 
 # --------------------------------------------------------------------------------
+do_finish() {
+  exit
+}
+
+# --------------------------------------------------------------------------------
 do_tools_menu() {
   FUN=$(whiptail --title "Raspberry Pi Configuration Tool (raspi-config)" --menu "Interfacing Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button $BTN_BACK --ok-button Select \
     "P1 SSH" "Enable/Disable remote command line access to your Pi using SSH" \
