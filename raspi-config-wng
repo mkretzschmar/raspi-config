@@ -446,8 +446,7 @@ do_winogate_setup() {
   #whiptail --msgbox "You will now be asked to enter the ID for the WiNoGATE" 20 60 1
   #do_winogate_s1;
 
-DISTROS=$(whiptail --title "WiNoGate: Tools und Anwendungen" --checklist \
-	"Choose preferred Linux distros" 15 60 4 \
+DISTROS=$(whiptail --title "WiNoGate: Tools und Anwendungen" --checklist 15 60 4 \
 	"Debian" "Stable Debian" ON \
 	"Ubuntu" "Debian copycat" OFF \
 	"Centos" "Redhat copycat" ON \ 
@@ -455,7 +454,7 @@ DISTROS=$(whiptail --title "WiNoGate: Tools und Anwendungen" --checklist \
 exitstatus=$?
 if [ $exitstatus = 0 ];
 then echo "Your favorite distros are:" $DISTROS
-else echo "YCancelled."
+else echo "Cancelled."
 fi
 
 }
