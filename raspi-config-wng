@@ -446,16 +446,23 @@ do_winogate_setup() {
   #whiptail --msgbox "You will now be asked to enter the ID for the WiNoGATE" 20 60 1
   #do_winogate_s1;
 
-whiptail --title "Test" --checklist --separate-output "Choose:" 20 78 15 \
-"ovpn" "OpenVPN Client" on \
-"mc" "Midnight Commander" off \
-"lnav" "LNAV" on \
-"symcon" "IP-Symcon 5.1" off
-2>results
+do_winogate_install_1
+do_winogate_install_2
+}
 
-while read choice
-do
-	case $choice in
+# --------------------------------------------------------------------------------
+#
+# --------------------------------------------------------------------------------
+do_winogate_install_1() {
+  whiptail --title "Test" --checklist --separate-output "Choose:" 20 78 15 \
+    "ovpn" "OpenVPN Client" on \
+    "mc" "Midnight Commander" off \
+    "lnav" "LNAV" on \
+    "symcon" "IP-Symcon 5.1" off 2>results
+
+  while read choice
+  do
+	  case $choice in
                 ovpn) echo "Installing OpenVPN..."
                 ;;
                 mc) echo "Installing MC..."
@@ -466,18 +473,14 @@ do
                 ;;
                 *)
                 ;;
-        esac
-done < results
-
-
-#do_winogate_s1
-
+  esac
+  done < results
 }
 
 # --------------------------------------------------------------------------------
 #
 # --------------------------------------------------------------------------------
-do_winogate_s1() {
+do_winogate_install_2() {
 
   SEL=$(whiptail --title "Check list example" --checklist \
    "Choose user's permissions" 20 78 4 \
