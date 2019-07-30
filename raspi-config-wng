@@ -466,16 +466,17 @@ do
 done < results
 
 DISTROS=$(whiptail --title "WiNoGate: Tools und Anwendungen" --checklist " " 15 60 4 \
-	"Debian" "Stable Debian" ON \
-	"Ubuntu" "Debian copycat" OFF \
-	"Centos" "Redhat copycat" ON \ 
-	"Mint" "Copycat Ubuntu" OFF \
-	3>&1 1>&2 2>&3)
+  "Debian" "Stable Debian" ON \
+  "Ubuntu" "Debian copycat" OFF \
+  "Centos" "Redhat copycat" ON \ 
+  "Mint" "Copycat Ubuntu" OFF \
+  3>&1 1>&2 2>&3)
 exitstatus=$?
 if [ $exitstatus = 0 ];
 then echo "Your favorite distros are: $DISTROS"
 else echo "Cancelled."
 fi
+
 
 }
 
