@@ -2099,7 +2099,7 @@ do_internationalisation_menu() {
 }
 
 # --------------------------------------------------------------------------------
-do_interface_menu() {
+do_tools_menu() {
   FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Interfacing Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
     "P1 Camera" "Enable/Disable connection to the Raspberry Pi Camera" \
     "P2 SSH" "Enable/Disable remote command line access to your Pi using SSH" \
@@ -2187,25 +2187,7 @@ do_boot_menu() {
   fi
 }
 
-# --------------------------------------------------------------------------------
-do_network_menu() {
-  FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Network Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
-    "N1 Hostname" "Set the visible name for this Pi on a network" \
-    "N2 Wi-fi" "Enter SSID and passphrase" \
-    "N3 Network interface names" "Enable/Disable predictable network interface names" \
-    3>&1 1>&2 2>&3)
-  RET=$?
-  if [ $RET -eq 1 ]; then
-    return 0
-  elif [ $RET -eq 0 ]; then
-    case "$FUN" in
-      N1\ *) do_hostname ;;
-      N2\ *) do_wifi_ssid_passphrase ;;
-      N3\ *) do_net_names ;;
-      *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
-    esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
-  fi
-}
+
 
 # --------------------------------------------------------------------------------
 #
@@ -2218,26 +2200,17 @@ if [ "$INTERACTIVE" = True ]; then
     if is_pi ; then
       #FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool for WiNoGATE (raspi-config-wng)" --backtitle "$(cat /proc/device-tree/model)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Ende --ok-button Auswahl \
       FUN=$(whiptail --title "Software Configuration Tool for WiNoGATE (raspi-config-wng)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Ende --ok-button Auswahl \
-        "1 Setup WiNoGATE" "WiNoGATE basic setup" \
-        "2 Network Options" "Configure network settings" \
-        "3 Boot Options" "Configure options for start-up" \
-        "4 Localisation Options" "Set up language and regional settings to match your location" \
-        "5 Interfacing Options" "Configure connections to peripherals" \
-        "6 Overclock" "Configure overclocking for your Pi" \
-        "7 Advanced Options" "Configure advanced settings" \
-        "8 Update" "Update this tool to the latest version" \
-        "9 About raspi-config" "Information about this configuration tool" \
+        "1 Setup WiNoGATE" "WiNoGATE Basisinstallation" \
+        "2 Tools" "Hilfsprogramme" \
+        "8 Update" "Dieses Tool auf neueste Version bringen" \
+        "9 About raspi-config" "Information über dieses Konfigurationswerkzeug" \
         3>&1 1>&2 2>&3)
     else
       FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool for WiNoGATE (raspi-config-wng)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Finish --ok-button Select \
-        "1 Setup WiNoGATE" "WiNoGATE basic setup" \
-        "2 Network Options" "Configure network settings" \
-        "3 Boot Options" "Configure options for start-up" \
-        "4 Localisation Options" "Set up language and regional settings to match your location" \
-        "5 SSH" "Enable/Disable remote command line access to your PC using SSH" \
-        "6 Pixel Doubling" "Enable/Disable 2x2 pixel mapping" \
-        "8 Update" "Update this tool to the latest version" \
-        "9 About raspi-config" "Information about this configuration tool" \
+        "1 Setup WiNoGATE" "WiNoGATE Basisinstallation" \
+        "2 Tools" "Hilfsprogramme" \
+        "8 Update" "Dieses Tool auf neueste Version bringen" \
+        "9 About raspi-config" "Information über dieses Konfigurationswerkzeug" \
         3>&1 1>&2 2>&3)
     fi
     RET=$?
@@ -2247,12 +2220,7 @@ if [ "$INTERACTIVE" = True ]; then
       if is_pi ; then
         case "$FUN" in
 	  1\ *) do_winogate_setup ;;
-          2\ *) do_network_menu ;;
-          3\ *) do_boot_menu ;;
-          4\ *) do_internationalisation_menu ;;
-          5\ *) do_interface_menu ;;
-          6\ *) do_overclock ;;
-          7\ *) do_advanced_menu ;;
+	  2\ *) do_tools_menu ;;
           8\ *) do_update ;;
           9\ *) do_about ;;
           *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
@@ -2260,11 +2228,7 @@ if [ "$INTERACTIVE" = True ]; then
       else
         case "$FUN" in
 	  1\ *) do_winogate_setup ;;
-          2\ *) do_network_menu ;;
-          3\ *) do_boot_menu ;;
-          4\ *) do_internationalisation_menu ;;
-          5\ *) do_ssh ;;
-          6\ *) do_pixdub ;;
+	  2\ *) do_tools_menu ;;
           8\ *) do_update ;;
           9\ *) do_about ;;
           *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
