@@ -455,17 +455,22 @@ do_winogate_setup() {
     "Symcon" "IP-Symcon Building AUtomation" ON \
     "NetCat" "NETCAT" ON \
     "..." "?" OFF 2>results
+
+  whiptail --msgbox "Installing $results" 20 60
+  
   while read choice
   do
     case $choice in
-      LNAV) sudo apt-get install lnav
-      ;;
+      LNAV)
+        whiptail --msgbox "Installing lnav" 20 60
+        sudo apt-get install lnav
+        ;;
       MC) sudo apt-get install mc
-      ;;
+        ;;
       NetCat) sudo apt-get install nc
-      ;;
+        ;;
       *)
-      ;;
+        ;;
   esac
   done < results
 }
