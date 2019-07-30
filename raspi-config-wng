@@ -12,7 +12,7 @@ root=,brightcyan
 '
 
 BACKTITLE="WiNoGATE (C) 2019 University of Applied Sciences Zwickau"
-TITLE="Configuration Tool for WiNoGATE (raspi-config-wng)"
+WN_TITLE="Configuration Tool for WiNoGATE (raspi-config-wng)"
 BTN_BACK=Zurück
 
 # --------------------------------------------------------------------------------
@@ -397,7 +397,7 @@ do_finish() {
 # ################################################################################
 # --------------------------------------------------------------------------------
 do_winogate_menu() {
-  FUN=$(whiptail --title $TITLE --menu "Interfacing Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button $BTN_BACK --ok-button Select \
+  FUN=$(whiptail --title "$WN_TITLE" --menu "WiNoGate Optionen" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button $BTN_BACK --ok-button Select \
     "P1 Benutzer" "Benutzer 'windnode' anlegen und konfigurieren" \
     "P2 Tools" "Hilfsprogramme und Werkzeuge installieren" \
     "P1 Apps" "Anwendungen installieren" \
@@ -419,7 +419,7 @@ do_winogate_menu() {
 
 # --------------------------------------------------------------------------------
 do_tools_menu() {
-  FUN=$(whiptail --title $TITLE --menu "Interfacing Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button $BTN_BACK --ok-button Select \
+  FUN=$(whiptail --title "$WN_TITLE" --menu "Werkzeugoptionen" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button $BTN_BACK --ok-button Select \
     "P1 SSH" "Enable/Disable remote command line access to your Pi using SSH" \
     3>&1 1>&2 2>&3)
   RET=$?
@@ -443,14 +443,14 @@ if [ "$INTERACTIVE" = True ]; then
   calc_wt_size
   while true; do
     if is_pi ; then
-      FUN=$(whiptail --title $TITLE --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Ende --ok-button Auswahl \
+      FUN=$(whiptail --title "$WN_TITLE" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Ende --ok-button Auswahl \
         "1 Setup WiNoGATE" "WiNoGATE Basisinstallation" \
         "2 Tools" "Hilfsprogramme" \
         "8 Update" "Dieses Tool auf neueste Version bringen" \
         "9 About raspi-config" "Information über dieses Konfigurationswerkzeug" \
         3>&1 1>&2 2>&3)
     else
-      FUN=$(whiptail --title $TITLE --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Finish --ok-button Select \
+      FUN=$(whiptail --title "$WN_TITLE" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Finish --ok-button Select \
         "1 Setup WiNoGATE" "WiNoGATE Basisinstallation" \
         "2 Tools" "Hilfsprogramme" \
         "8 Update" "Dieses Tool auf neueste Version bringen" \
