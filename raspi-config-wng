@@ -447,37 +447,38 @@ do_winogate_setup() {
   do
   CHOICE=$(
   whiptail --title "Operative Systems" --menu "Make your choice" 16 100 9 \
-	  "1)" "The name of this script."   \
-	  "2)" "Time since last boot."  \
-	  "3)" "Number of processes and threads." \
-	  "4)" "Number of context switches in the last secound." \
-	  "5)" "How much time used in kernel mode and in user mode in the last secound." \
-  	"9)" "End script"  3>&2 2>&1 1>&3	
+	  "1)" "Benutzer anlegen"   \
+	  "2)" "Tools installieren"  \
+	  "3)" "Anwendungen installieren" \
+	  "4)" "Ferninstallation aktivieren" \
+	  "5)" "Automatisch konfigurieren" \
+  	"9)" "Zurück"  3>&2 2>&1 1>&3	
   )
 
 
   result=$(whoami)
   case $CHOICE in
-	  "1)")   
-	  	result="I am $result, the name of the script is start"
+	  "1)")
+      RES=$(do_create_wng_user)
+	  	result="$RES"
 	  ;;
-	  "2)")   
+	  "2)")
 	    OP=$(uptime | awk '{print $3;}')
 		  result="This system has been up $OP minutes"
 	  ;;
 
-	  "3)")   
+	  "3)")
 	    p=$(ps ax | wc -l)
         t=$(ps amx | wc -l)
 		    result="Number of processes $p\nNumber os threads $t"
       ;;
 
-	  "4)")   
+	  "4)")
 	      contextSwitch
 		  read -r result < result
       ;;
 
-	  "5)")   
+	  "5)")
         userKernelMode
 		  read -r result < result
       ;;
@@ -487,14 +488,14 @@ do_winogate_setup() {
   esac
   whiptail --msgbox "$result" 20 78
   done
-  #do_winogate_install_1
-  #do_winogate_install_2
+  #do_winogate_install_test1
+  #do_winogate_install_test2
 }
 
 # --------------------------------------------------------------------------------
 #
 # --------------------------------------------------------------------------------
-do_winogate_install_1() {
+do_winogate_install_test1() {
   whiptail --title "Test" --checklist --separate-output "Choose:" 20 78 15 \
     "ovpn" "OpenVPN Client" on \
     "mc" "Midnight Commander" off \
@@ -521,7 +522,7 @@ do_winogate_install_1() {
 # --------------------------------------------------------------------------------
 #
 # --------------------------------------------------------------------------------
-do_winogate_install_2() {
+do_winogate_install_test2() {
 
   SEL=$(whiptail --title "Check list example" --checklist \
    "Choose user's permissions" 20 78 4 \
@@ -540,7 +541,7 @@ do_winogate_install_2() {
 # --------------------------------------------------------------------------------
 #
 # --------------------------------------------------------------------------------
-do_winogate_s2() {
+do_winogate_test2() {
   WNGID="$1"
   while [ -z "$WNGID" ] && [ "$INTERACTIVE" = True ]; do
     WNGID=$(whiptail --inputbox "Please enter WNGID" 20 60 3>&1 1>&2 2>&3)
@@ -557,7 +558,8 @@ do_winogate_s2() {
 # Create user 'windnode' and set authorized_keys
 # --------------------------------------------------------------------------------
 do_create_wng_user() {
-  sudo apt-get update
+  RES=$(sudo useradd -d /home/windnode -s /bin/bash -m windnode)
+  return 0
 }
 
 # --------------------------------------------------------------------------------
