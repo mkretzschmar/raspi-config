@@ -5,12 +5,10 @@
 
 INTERACTIVE=True
 ASK_TO_REBOOT=0
-BLACKLIST=/etc/modprobe.d/raspi-blacklist.conf
 CONFIG=/boot/config.txt
 
 export NEWT_COLORS='
 root=,brightcyan
-checklist=white,black
 '
 
 BACKTITLE="WiNoGATE (C) 2019 University of Applied Sciences Zwickau"
@@ -123,75 +121,11 @@ calc_wt_size() {
 # --------------------------------------------------------------------------------
 do_about() {
   whiptail --msgbox "\
-This tool provides a straight-forward way of doing initial
-configuration of the Raspberry Pi for use as WiNoGATE Gateway at the WindNODE Research Project (www.windnode.de).
+This tool provides a straight-forward way of doing initial configuration of the Raspberry Pi for use as WiNoGATE Gateway at the WindNODE Research Project (www.windnode.de).
 
 Although it can be run at any time, some of the options may have difficulties if you have heavily customised your installation.\
 " 20 70 1
 }
-
-
-# --------------------------------------------------------------------------------
-set_config_var() {
-  lua - "$1" "$2" "$3" <<EOF > "$3.bak"
-local key=assert(arg[1])
-local value=assert(arg[2])
-local fn=assert(arg[3])
-local file=assert(io.open(fn))
-local made_change=false
-for line in file:lines() do
-  if line:match("^#?%s*"..key.."=.*$") then
-    line=key.."="..value
-    made_change=true
-  end
-  print(line)
-end
-
-if not made_change then
-  print(key.."="..value)
-end
-EOF
-mv "$3.bak" "$3"
-}
-
-# --------------------------------------------------------------------------------
-clear_config_var() {
-  lua - "$1" "$2" <<EOF > "$2.bak"
-local key=assert(arg[1])
-local fn=assert(arg[2])
-local file=assert(io.open(fn))
-for line in file:lines() do
-  if line:match("^%s*"..key.."=.*$") then
-    line="#"..line
-  end
-  print(line)
-end
-EOF
-mv "$2.bak" "$2"
-}
-
-# --------------------------------------------------------------------------------
-get_config_var() {
-  lua - "$1" "$2" <<EOF
-local key=assert(arg[1])
-local fn=assert(arg[2])
-local file=assert(io.open(fn))
-local found=false
-for line in file:lines() do
-  local val = line:match("^%s*"..key.."=(.*)$")
-  if (val ~= nil) then
-    print(val)
-    found=true
-    break
-  end
-end
-if not found then
-   print(0)
-end
-EOF
-}
-
-
 
 
 # --------------------------------------------------------------------------------
@@ -276,38 +210,6 @@ do_install_wng_dev() {
 # --------------------------------------------------------------------------------
 do_install_wng_prod() {
   sudo apt-get update && sudo apt-get dist-upgrade $$ sudo apt-get install ufw
-}
-
-# --------------------------------------------------------------------------------
-do_configure_keyboard() {
-  printf "Reloading keymap. This may take a short while\n"
-  if [ "$INTERACTIVE" = True ]; then
-    dpkg-reconfigure keyboard-configuration
-  else
-    local KEYMAP="$1"
-    sed -i /etc/default/keyboard -e "s/^XKBLAYOUT.*/XKBLAYOUT=\"$KEYMAP\"/"
-    dpkg-reconfigure -f noninteractive keyboard-configuration
-  fi
-  invoke-rc.d keyboard-setup start
-  setsid sh -c 'exec setupcon -k --force <> /dev/tty1 >&0 2>&1'
-  udevadm trigger --subsystem-match=input --action=change
-  return 0
-}
-
-# --------------------------------------------------------------------------------
-do_change_locale() {
-  if [ "$INTERACTIVE" = True ]; then
-    dpkg-reconfigure locales
-  else
-    local LOCALE="$1"
-    if ! LOCALE_LINE="$(grep "^$LOCALE " /usr/share/i18n/SUPPORTED)"; then
-      return 1
-    fi
-    local ENCODING="$(echo $LOCALE_LINE | cut -f2 -d " ")"
-    echo "$LOCALE $ENCODING" > /etc/locale.gen
-    sed -i "s/^\s*LANG=\S*/LANG=$LOCALE/" /etc/default/locale
-    dpkg-reconfigure -f noninteractive locales
-  fi
 }
 
 # --------------------------------------------------------------------------------
@@ -465,72 +367,6 @@ do_ssh() {
 
 
 # --------------------------------------------------------------------------------
-do_boot_behaviour() {
-  if [ "$INTERACTIVE" = True ]; then
-    BOOTOPT=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Boot Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT \
-      "B1 Console" "Text console, requiring user to login" \
-      "B2 Console Autologin" "Text console, automatically logged in as '$SUDO_USER' user" \
-      "B3 Desktop" "Desktop GUI, requiring user to login" \
-      "B4 Desktop Autologin" "Desktop GUI, automatically logged in as '$SUDO_USER' user" \
-      3>&1 1>&2 2>&3)
-  else
-    BOOTOPT=$1
-    true
-  fi
-  if [ $? -eq 0 ]; then
-    case "$BOOTOPT" in
-      B1*)
-        systemctl set-default multi-user.target
-        ln -fs /lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@tty1.service
-        rm /etc/systemd/system/getty@tty1.service.d/autologin.conf
-        ;;
-      B2*)
-        systemctl set-default multi-user.target
-        ln -fs /lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@tty1.service
-        cat > /etc/systemd/system/getty@tty1.service.d/autologin.conf << EOF
-[Service]
-ExecStart=
-ExecStart=-/sbin/agetty --autologin $SUDO_USER --noclear %I \$TERM
-EOF
-        ;;
-      B3*)
-        if [ -e /etc/init.d/lightdm ]; then
-          systemctl set-default graphical.target
-          ln -fs /lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@tty1.service
-          rm /etc/systemd/system/getty@tty1.service.d/autologin.conf
-          sed /etc/lightdm/lightdm.conf -i -e "s/^autologin-user=.*/#autologin-user=/"
-          disable_raspi_config_at_boot
-        else
-          whiptail --msgbox "Do 'sudo apt-get install lightdm' to allow configuration of boot to desktop" 20 60 2
-          return 1
-        fi
-        ;;
-      B4*)
-        if [ -e /etc/init.d/lightdm ]; then
-          systemctl set-default graphical.target
-          ln -fs /lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@tty1.service
-          cat > /etc/systemd/system/getty@tty1.service.d/autologin.conf << EOF
-[Service]
-ExecStart=
-ExecStart=-/sbin/agetty --autologin $SUDO_USER --noclear %I \$TERM
-EOF
-          sed /etc/lightdm/lightdm.conf -i -e "s/^\(#\|\)autologin-user=.*/autologin-user=$SUDO_USER/"
-          disable_raspi_config_at_boot
-        else
-          whiptail --msgbox "Do 'sudo apt-get install lightdm' to allow configuration of boot to desktop" 20 60 2
-          return 1
-        fi
-        ;;
-      *)
-        whiptail --msgbox "Programmer error, unrecognised boot option" 20 60 2
-        return 1
-        ;;
-    esac
-    ASK_TO_REBOOT=1
-  fi
-}
-
-# --------------------------------------------------------------------------------
 do_update() {
   #apt-get update &&
   #apt-get install raspi-config &&
@@ -549,103 +385,6 @@ list_wlan_interfaces() {
       basename "$(dirname "$dir")"
     fi
   done
-}
-
-# --------------------------------------------------------------------------------
-do_wifi_ssid_passphrase() {
-  RET=0
-  IFACE_LIST="$(list_wlan_interfaces)"
-  IFACE="$(echo "$IFACE_LIST" | head -n 1)"
-
-  if [ -z "$IFACE" ]; then
-    if [ "$INTERACTIVE" = True ]; then
-      whiptail --msgbox "No wireless interface found" 20 60
-    fi
-    return 1
-  fi
-
-  if ! wpa_cli -i "$IFACE" status > /dev/null 2>&1; then
-    if [ "$INTERACTIVE" = True ]; then
-      whiptail --msgbox "Could not communicate with wpa_supplicant" 20 60
-    fi
-    return 1
-  fi
-
-  if [ "$INTERACTIVE" = True ] && [ -z "$(get_wifi_country)" ]; then
-    do_wifi_country
-  fi
-
-  SSID="$1"
-  while [ -z "$SSID" ] && [ "$INTERACTIVE" = True ]; do
-    SSID=$(whiptail --inputbox "Please enter SSID" 20 60 3>&1 1>&2 2>&3)
-    if [ $? -ne 0 ]; then
-      return 0
-    elif [ -z "$SSID" ]; then
-      whiptail --msgbox "SSID cannot be empty. Please try again." 20 60
-    fi
-  done
-
-  PASSPHRASE="$2"
-  while [ "$INTERACTIVE" = True ]; do
-    PASSPHRASE=$(whiptail --passwordbox "Please enter passphrase. Leave it empty if none." 20 60 3>&1 1>&2 2>&3)
-    if [ $? -ne 0 ]; then
-      return 0
-    else
-      break
-    fi
-  done
-
-  # Escape special characters for embedding in regex below
-  local ssid="$(echo "$SSID" \
-   | sed 's;\\;\\\\;g' \
-   | sed -e 's;\.;\\\.;g' \
-         -e 's;\*;\\\*;g' \
-         -e 's;\+;\\\+;g' \
-         -e 's;\?;\\\?;g' \
-         -e 's;\^;\\\^;g' \
-         -e 's;\$;\\\$;g' \
-         -e 's;\/;\\\/;g' \
-         -e 's;\[;\\\[;g' \
-         -e 's;\];\\\];g' \
-         -e 's;{;\\{;g'   \
-         -e 's;};\\};g'   \
-         -e 's;(;\\(;g'   \
-         -e 's;);\\);g'   \
-         -e 's;";\\\\\";g')"
-
-  wpa_cli -i "$IFACE" list_networks \
-   | tail -n +2 | cut -f -2 | grep -P "\t$ssid$" | cut -f1 \
-   | while read ID; do
-    wpa_cli -i "$IFACE" remove_network "$ID" > /dev/null 2>&1
-  done
-
-  ID="$(wpa_cli -i "$IFACE" add_network)"
-  wpa_cli -i "$IFACE" set_network "$ID" ssid "\"$SSID\"" 2>&1 | grep -q "OK"
-  RET=$((RET + $?))
-
-  if [ -z "$PASSPHRASE" ]; then
-    wpa_cli -i "$IFACE" set_network "$ID" key_mgmt NONE 2>&1 | grep -q "OK"
-    RET=$((RET + $?))
-  else
-    wpa_cli -i "$IFACE" set_network "$ID" psk "\"$PASSPHRASE\"" 2>&1 | grep -q "OK"
-    RET=$((RET + $?))
-  fi
-
-  if [ $RET -eq 0 ]; then
-    wpa_cli -i "$IFACE" enable_network "$ID" > /dev/null 2>&1
-  else
-    wpa_cli -i "$IFACE" remove_network "$ID" > /dev/null 2>&1
-    if [ "$INTERACTIVE" = True ]; then
-      whiptail --msgbox "Failed to set SSID or passphrase" 20 60
-    fi
-  fi
-  wpa_cli -i "$IFACE" save_config > /dev/null 2>&1
-
-  echo "$IFACE_LIST" | while read IFACE; do
-    wpa_cli -i "$IFACE" reconfigure > /dev/null 2>&1
-  done
-
-  return $RET
 }
 
 
