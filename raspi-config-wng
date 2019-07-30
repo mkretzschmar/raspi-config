@@ -447,7 +447,7 @@ do_winogate_setup() {
   do_winogate_s1;
   whiptail --msgbox "Interactive: $INTERACTIVE" 20 60 1
   
-  whiptail --title "WiNoGate: Tools und Anwendungen" --checklist "" 5 5 20 \
+  whiptail --title "WiNoGate: Tools und Anwendungen" --checklist "" 20 60 15 \
     "LNAV" "..." ON \
     "MC" "MIDNIGHT COMMANDER" ON \
     "NetCat" "NETCAT" ON \
