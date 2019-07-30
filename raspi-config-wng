@@ -446,19 +446,6 @@ do_winogate_setup() {
   #whiptail --msgbox "You will now be asked to enter the ID for the WiNoGATE" 20 60 1
   #do_winogate_s1;
 
-
-function firstroutine {
-  echo "running johns function"
-}
-
-function secondroutine {
-	echo "running glens function"
-}
-
-function thirdroutine {
-  echo "running adams function"
-}
-
 whiptail --title "Test" --checklist --separate-output "Choose:" 20 78 15 \
 "John" "" on \
 "Glen" "" off \
@@ -467,11 +454,11 @@ whiptail --title "Test" --checklist --separate-output "Choose:" 20 78 15 \
 while read choice
 do
 	case $choice in
-                John) firstroutine
+                John) echo "running johns function"
                 ;;
-                Glen) secondroutine
+                Glen) echo "running glens function"
                 ;;
-                Adam) thirdroutine
+                Adam) echo "running adams function"
                 ;;
                 *)
                 ;;
