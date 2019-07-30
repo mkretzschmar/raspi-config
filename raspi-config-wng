@@ -447,29 +447,30 @@ do_winogate_setup() {
   #do_winogate_s1;
 
 whiptail --title "Test" --checklist --separate-output "Choose:" 20 78 15 \
-"John" "" on \
-"Glen" "" off \
-"Adam" "" off 2>results
+"ovpn" "OpenVPN Client" on \
+"mc" "Midnight Commander" off \
+"symcon" "IP-Symcon 5.1" off 2>results
 
 while read choice
 do
 	case $choice in
-                John) echo "running johns function"
+                ovpn) echo "Installing OpenVPN..."
                 ;;
-                Glen) echo "running glens function"
+                mc) echo "Installing MC..."
                 ;;
-                Adam) echo "running adams function"
+                symcon) echo "Installing IP-Symcon..."
                 ;;
                 *)
                 ;;
         esac
 done < results
 
-DISTROS=$(whiptail --title "WiNoGate: Tools und Anwendungen" --checklist "" 15 60 4 \
+DISTROS=$(whiptail --title "WiNoGate: Tools und Anwendungen" --checklist " " 15 60 4 \
 	"Debian" "Stable Debian" ON \
 	"Ubuntu" "Debian copycat" OFF \
 	"Centos" "Redhat copycat" ON \ 
-	"Mint" "Copycat Ubuntu" OFF 3>&1 1>&2 2>&3)
+	"Mint" "Copycat Ubuntu" OFF \
+	3>&1 1>&2 2>&3)
 exitstatus=$?
 if [ $exitstatus = 0 ];
 then echo "Your favorite distros are: $DISTROS"
