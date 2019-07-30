@@ -443,7 +443,7 @@ do_change_pass() {
 #
 # --------------------------------------------------------------------------------
 do_winogate_setup() {
-  whiptail --msgbox "You will now be asked to enter the ID for the WiNoGATE" 20 60 1
+  #whiptail --msgbox "You will now be asked to enter the ID for the WiNoGATE" 20 60 1
   #do_winogate_s1;
 
 DISTROS=$(whiptail --title "WiNoGate: Tools und Anwendungen" --checklist \
