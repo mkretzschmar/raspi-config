@@ -456,11 +456,11 @@ whiptail --title "Test" --checklist --separate-output "Choose:" 20 78 15 \
 while read choice
 do
 	case $choice in
-                ovpn) echo "Installing OpenVPN..." && sudo apt-get install openvpn
+                ovpn) echo "Installing OpenVPN..."
                 ;;
-                mc) echo "Installing MC..." && sudo apt-get install mc
-                ;;
-                lnav) echo "Installing lnav..." && sudo apt-get install lnav
+                mc) echo "Installing MC..."
+		;;
+                lnav) echo "Installing lnav..."
                 ;;
                 symcon) echo "Installing IP-Symcon..."
                 ;;
@@ -470,7 +470,7 @@ do
 done < results
 
 
-do_winogate_s1
+#do_winogate_s1
 
 }
 
