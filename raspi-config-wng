@@ -496,10 +496,11 @@ do_winogate_setup() {
 #
 # --------------------------------------------------------------------------------
 do_winogate_install_test1() {
-  whiptail --title "Test" --checklist --separate-output "Choose:" 20 78 15 \
-    "ovpn" "OpenVPN Client" on \
-    "mc" "Midnight Commander" off \
-    "lnav" "LNAV" on \
+  whiptail --title "Software-Installation" --checklist --separate-output "Choose:" 20 78 15 \
+    "ovpn" "OpenVPN Client" ON \
+    "ufw" "Firewall" ON \
+    "mc" "Midnight Commander" OFF \
+    "lnav" "LNAV" OFF \
     "symcon" "IP-Symcon 5.1" off 2>results
 
   while read choice
@@ -526,10 +527,9 @@ do_winogate_install_test2() {
 
   SEL=$(whiptail --title "Check list example" --checklist \
    "Choose user's permissions" 20 78 4 \
-   "NET_OUTBOUND" "Allow connections to other hosts" ON \
-   "NET_INBOUND" "Allow connections from other hosts" OFF \
-   "LOCAL_MOUNT" "Allow mounting of local devices" OFF \
-   "REMOTE_MOUNT" "Allow mounting of remote devices" OFF 3>&1 1>&2 2>&3)
+   "nopasswd" "Erlaube SSH nur mit Zertifikat, kein Passwort" ON \
+   "sudoer" "Benutzer 'windnode' in Sudoers aufnehmen" OFF \
+   "..." "..." OFF 3>&1 1>&2 2>&3)
   exitstatus=$?
 
   if [ $exitstatus = 0 ];
