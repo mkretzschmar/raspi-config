@@ -444,35 +444,20 @@ do_change_pass() {
 # --------------------------------------------------------------------------------
 do_winogate_setup() {
   whiptail --msgbox "You will now be asked to enter the ID for the WiNoGATE" 20 60 1
-  do_winogate_s1;
-  whiptail --msgbox "Interactive: $INTERACTIVE" 20 60 1
-  
-  whiptail --title "WiNoGate: Tools und Anwendungen" --checklist "" 20 60 15 \
-    "LNAV" "..." ON \
-    "MC" "MIDNIGHT COMMANDER" ON \
-    "NetCat" "NETCAT" ON \
-    "OpenVPN" "OpenVPN Client" ON \
-    "Symcon" "IP-Symcon Building AUtomation" ON \
-    "NetCat" "NETCAT" ON \
-    "..." "?" OFF 2>results
+  #do_winogate_s1;
 
-  whiptail --msgbox "Installing $results" 20 60
-  
-  while read choice
-  do
-    case $choice in
-      LNAV)
-        whiptail --msgbox "Installing lnav" 20 60
-        sudo apt-get install lnav
-        ;;
-      MC) sudo apt-get install mc
-        ;;
-      NetCat) sudo apt-get install nc
-        ;;
-      *)
-        ;;
-  esac
-  done < results
+DISTROS=$(whiptail --title "WiNoGate: Tools und Anwendungen" --checklist \
+	"Choose preferred Linux distros" 15 60 4 \
+	"Debian" "Stable Debian" ON \
+	"Ubuntu" "Debian copycat" OFF \
+	"Centos" "Redhat copycat" ON \ 
+	"Mint" "Copycat Ubuntu/Debian" OFF 3>&1 1>&2 2>&3)
+exitstatus=$?
+if [ $exitstatus = 0 ];
+then echo "Your favorite distros are:" $DISTROS
+else echo "YCancelled."
+fi
+
 }
 
 # --------------------------------------------------------------------------------
