@@ -439,6 +439,14 @@ do_change_pass() {
   whiptail --msgbox "Password changed successfully" 20 60 1
 }
 
+# --------------------------------------------------------------------------------
+# ################################################################################
+# --------------------------------------------------------------------------------
+do_winogate_setup() {
+  #whiptail --msgbox "You will now be asked to enter the ID for the WiNoGATE" 20 60 1
+  #do_winogate_s1;
+
+
 function firstroutine {
  echo "running johns function"
 }
@@ -451,14 +459,6 @@ function secondroutine {
 function thirdroutine {
  echo "running adams function"
 }
-
-# --------------------------------------------------------------------------------
-# ################################################################################
-# --------------------------------------------------------------------------------
-do_winogate_setup() {
-  #whiptail --msgbox "You will now be asked to enter the ID for the WiNoGATE" 20 60 1
-  #do_winogate_s1;
-
 
 whiptail --title "Test" --checklist --separate-output "Choose:" 20 78 15 \
 "John" "" on \
