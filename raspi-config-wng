@@ -15,6 +15,8 @@ checklist=white,black
 
 BACKTITLE="WiNoGATE (C) 2019 University of Applied Sciences Zwickau"
 
+BTN_BACK=Zurück
+
 # --------------------------------------------------------------------------------
 is_pi () {
   ARCH=$(dpkg --print-architecture)
@@ -700,7 +702,7 @@ do_wifi_ssid_passphrase() {
 
 # --------------------------------------------------------------------------------
 do_tools_menu() {
-  FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Interfacing Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
+  FUN=$(whiptail --title "Raspberry Pi Configuration Tool (raspi-config)" --menu "Interfacing Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button $BTN_BACK --ok-button Select \
     "P1 SSH" "Enable/Disable remote command line access to your Pi using SSH" \
     3>&1 1>&2 2>&3)
   RET=$?
@@ -724,7 +726,7 @@ if [ "$INTERACTIVE" = True ]; then
   calc_wt_size
   while true; do
     if is_pi ; then
-      #FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool for WiNoGATE (raspi-config-wng)" --backtitle "$(cat /proc/device-tree/model)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Ende --ok-button Auswahl \
+      #FUN=$(whiptail --title "Raspberry Pi Configuration Tool for WiNoGATE (raspi-config-wng)" --backtitle "$(cat /proc/device-tree/model)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Ende --ok-button Auswahl \
       FUN=$(whiptail --title "Software Configuration Tool for WiNoGATE (raspi-config-wng)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Ende --ok-button Auswahl \
         "1 Setup WiNoGATE" "WiNoGATE Basisinstallation" \
         "2 Tools" "Hilfsprogramme" \
@@ -732,7 +734,7 @@ if [ "$INTERACTIVE" = True ]; then
         "9 About raspi-config" "Information über dieses Konfigurationswerkzeug" \
         3>&1 1>&2 2>&3)
     else
-      FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool for WiNoGATE (raspi-config-wng)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Finish --ok-button Select \
+      FUN=$(whiptail --title "Raspberry Pi Configuration Tool for WiNoGATE (raspi-config-wng)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Finish --ok-button Select \
         "1 Setup WiNoGATE" "WiNoGATE Basisinstallation" \
         "2 Tools" "Hilfsprogramme" \
         "8 Update" "Dieses Tool auf neueste Version bringen" \
