@@ -456,37 +456,21 @@ whiptail --title "Test" --checklist --separate-output "Choose:" 20 78 15 \
 while read choice
 do
 	case $choice in
-                ovpn) 
-                sudo apt-get install openvpn
-                echo "Installing OpenVPN..."
+                ovpn) echo "Installing OpenVPN..." && sudo apt-get install openvpn
                 ;;
-                mc) 
-                echo "Installing MC..."
+                mc) echo "Installing MC..." && sudo apt-get install mc
                 ;;
-                lnav)
-                sudo apt-get install lnav
-                echo "Installing lnav..."
+                lnav) echo "Installing lnav..." && sudo apt-get install lnav
                 ;;
-                symcon)
-                echo "Installing IP-Symcon..."
+                symcon) echo "Installing IP-Symcon..."
                 ;;
                 *)
                 ;;
         esac
 done < results
 
-SEL=$(whiptail --title "Check list example" --checklist \
-"Choose user's permissions" 20 78 4 \
-"NET_OUTBOUND" "Allow connections to other hosts" ON \
-"NET_INBOUND" "Allow connections from other hosts" OFF \
-"LOCAL_MOUNT" "Allow mounting of local devices" OFF \
-"REMOTE_MOUNT" "Allow mounting of remote devices" OFF 3>&1 1>&2 2>&3)
-exitstatus=$?
-if [ $exitstatus = 0 ];
-then echo "Selected: $SEL"
-else echo "Cancelled."
-fi
 
+do_winogate_s1
 
 }
 
@@ -494,6 +478,25 @@ fi
 #
 # --------------------------------------------------------------------------------
 do_winogate_s1() {
+
+  SEL=$(whiptail --title "Check list example" --checklist \
+   "Choose user's permissions" 20 78 4 \
+   "NET_OUTBOUND" "Allow connections to other hosts" ON \
+   "NET_INBOUND" "Allow connections from other hosts" OFF \
+   "LOCAL_MOUNT" "Allow mounting of local devices" OFF \
+   "REMOTE_MOUNT" "Allow mounting of remote devices" OFF 3>&1 1>&2 2>&3)
+  exitstatus=$?
+
+  if [ $exitstatus = 0 ];
+  then echo "Selected: $SEL"
+  else echo "Cancelled."
+  fi
+}
+
+# --------------------------------------------------------------------------------
+#
+# --------------------------------------------------------------------------------
+do_winogate_s2() {
   WNGID="$1"
   while [ -z "$WNGID" ] && [ "$INTERACTIVE" = True ]; do
     WNGID=$(whiptail --inputbox "Please enter WNGID" 20 60 3>&1 1>&2 2>&3)
