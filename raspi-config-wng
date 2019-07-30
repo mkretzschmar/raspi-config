@@ -192,58 +192,7 @@ EOF
 }
 
 
-# --------------------------------------------------------------------------------
-# ################################################################################
-# --------------------------------------------------------------------------------
-do_winogate_setup() {
-  while [ 1 ]
-  do
-  CHOICE=$(
-  whiptail --title "Operative Systems" --menu "Make your choice" 16 100 9 \
-	  "1)" "Benutzer anlegen"   \
-	  "2)" "Tools installieren"  \
-	  "3)" "Anwendungen installieren" \
-	  "4)" "Ferninstallation aktivieren" \
-	  "5)" "Automatisch konfigurieren" \
-  	"9)" "Zurück"  3>&2 2>&1 1>&3	
-  )
 
-
-  result=$(whoami)
-  case $CHOICE in
-	  "1)")
-      RES=$(do_create_wng_user)
-	  	result="$RES"
-	  ;;
-	  "2)")
-	    OP=$(uptime | awk '{print $3;}')
-		  result="This system has been up $OP minutes"
-	  ;;
-
-	  "3)")
-	    p=$(ps ax | wc -l)
-        t=$(ps amx | wc -l)
-		    result="Number of processes $p\nNumber os threads $t"
-      ;;
-
-	  "4)")
-	      contextSwitch
-		  read -r result < result
-      ;;
-
-	  "5)")
-        userKernelMode
-		  read -r result < result
-      ;;
-
-	  "9)") return
-      ;;
-  esac
-  #whiptail --msgbox "$result" 20 78
-  done
-  #do_winogate_install_test1
-  #do_winogate_install_test2
-}
 
 # --------------------------------------------------------------------------------
 #
@@ -706,6 +655,30 @@ do_finish() {
 }
 
 # --------------------------------------------------------------------------------
+# ################################################################################
+# --------------------------------------------------------------------------------
+do_winogate_menu() {
+  FUN=$(whiptail --title "Raspberry Pi Configuration Tool (raspi-config)" --menu "Interfacing Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button $BTN_BACK --ok-button Select \
+    "P1 Benutzer" "Benutzer 'windnode' anlegen und konfigurieren" \
+    "P2 Tools" "Hilfsprogramme und Werkzeuge installieren" \
+    "P1 Apps" "Anwendungen installieren" \
+    "P1 Konfiguration" "System konfigurieren" \
+    3>&1 1>&2 2>&3)
+  RET=$?
+  if [ $RET -eq 1 ]; then
+    return 0
+  elif [ $RET -eq 0 ]; then
+    case "$FUN" in
+      P1\ *) do_create_wng_user ;;
+      P1\ *) do_install_tools ;;
+      P1\ *) do_install_apps ;;
+      P1\ *) do_config ;;
+      *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
+    esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
+  fi
+}
+
+# --------------------------------------------------------------------------------
 do_tools_menu() {
   FUN=$(whiptail --title "Raspberry Pi Configuration Tool (raspi-config)" --menu "Interfacing Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button $BTN_BACK --ok-button Select \
     "P1 SSH" "Enable/Disable remote command line access to your Pi using SSH" \
@@ -752,7 +725,7 @@ if [ "$INTERACTIVE" = True ]; then
     elif [ $RET -eq 0 ]; then
       if is_pi ; then
         case "$FUN" in
-	  1\ *) do_winogate_setup ;;
+	  1\ *) do_winogate_menu ;;
 	  2\ *) do_tools_menu ;;
           8\ *) do_update ;;
           9\ *) do_about ;;
@@ -760,7 +733,7 @@ if [ "$INTERACTIVE" = True ]; then
         esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
       else
         case "$FUN" in
-	  1\ *) do_winogate_setup ;;
+	  1\ *) do_winogate_menu ;;
 	  2\ *) do_tools_menu ;;
           8\ *) do_update ;;
           9\ *) do_about ;;
