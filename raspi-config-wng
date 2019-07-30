@@ -483,10 +483,10 @@ do_winogate_setup() {
 		  read -r result < result
       ;;
 
-	  "9)") exit
+	  "9)") return
       ;;
   esac
-  whiptail --msgbox "$result" 20 78
+  #whiptail --msgbox "$result" 20 78
   done
   #do_winogate_install_test1
   #do_winogate_install_test2
