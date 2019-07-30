@@ -467,8 +467,8 @@ do_winogate_install_1() {
                 ;;
                 mc) echo "Installing MC..."
 		;;
-                lnav) echo "Installing lnav..."
-                ;;
+                #lnav) echo "Installing lnav..."
+                lnav) apt-get install -y lnav                ;;
                 symcon) echo "Installing IP-Symcon..."
                 ;;
                 *)
