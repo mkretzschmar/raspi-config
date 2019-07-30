@@ -449,31 +449,41 @@ do_winogate_setup() {
 whiptail --title "Test" --checklist --separate-output "Choose:" 20 78 15 \
 "ovpn" "OpenVPN Client" on \
 "mc" "Midnight Commander" off \
-"symcon" "IP-Symcon 5.1" off 2>results
+"lnav" "LNAV" on \
+"symcon" "IP-Symcon 5.1" off
+2>results
 
 while read choice
 do
 	case $choice in
-                ovpn) echo "Installing OpenVPN..."
+                ovpn) 
+                sudo apt-get install openvpn
+                echo "Installing OpenVPN..."
                 ;;
-                mc) echo "Installing MC..."
+                mc) 
+                echo "Installing MC..."
                 ;;
-                symcon) echo "Installing IP-Symcon..."
+                lnav)
+                sudo apt-get install lnav
+                echo "Installing lnav..."
+                ;;
+                symcon)
+                echo "Installing IP-Symcon..."
                 ;;
                 *)
                 ;;
         esac
 done < results
 
-DISTROS=$(whiptail --title "WiNoGate: Tools und Anwendungen" --checklist " " 15 60 4 \
-  "Debian" "Stable Debian" ON \
-  "Ubuntu" "Debian copycat" OFF \
-  "Centos" "Redhat copycat" ON \ 
-  "Mint" "Copycat Ubuntu" OFF \
-  3>&1 1>&2 2>&3)
+SEL=$(whiptail --title "Check list example" --checklist \
+"Choose user's permissions" 20 78 4 \
+"NET_OUTBOUND" "Allow connections to other hosts" ON \
+"NET_INBOUND" "Allow connections from other hosts" OFF \
+"LOCAL_MOUNT" "Allow mounting of local devices" OFF \
+"REMOTE_MOUNT" "Allow mounting of remote devices" OFF 3>&1 1>&2 2>&3)
 exitstatus=$?
 if [ $exitstatus = 0 ];
-then echo "Your favorite distros are: $DISTROS"
+then echo "Selected: $SEL"
 else echo "Cancelled."
 fi
 
