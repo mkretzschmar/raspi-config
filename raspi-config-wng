@@ -446,10 +446,13 @@ do_winogate_setup() {
   do_winogate_s1;
   whiptail --msgbox "Interactive: $INTERACTIVE" 20 60 1
   
-  whiptail --title "Tools" --checklist \
-    "Select software to install" 20 78 4 \
+  whiptail --title "WiNoGate Applications" --checklist \
+    "Select software to install" 20 78 8  50\
     "LNAV" "..." ON \
     "MC" "MIDNIGHT COMMANDER" ON \
+    "NetCat" "NETCAT" ON \
+    "OpenVPN" "OpenVPN Client" ON \
+    "Symcon" "IP-Symcon Building AUtomation" ON \
     "NetCat" "NETCAT" ON \
     "..." "?" OFF 2>results
   while read choice
