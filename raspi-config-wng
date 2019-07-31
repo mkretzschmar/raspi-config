@@ -16,6 +16,8 @@ BACKTITLE="WiNoGATE (C) 2019 University of Applied Sciences Zwickau"
 WN_TITLE="Configuration Tool for WiNoGATE (raspi-config-wng) v$VERSION"
 BTN_BACK=Zurück
 
+logger WiNoGate Configuration Tool started
+
 # --------------------------------------------------------------------------------
 is_pi () {
   ARCH=$(dpkg --print-architecture)
